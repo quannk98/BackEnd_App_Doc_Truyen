@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        nav {
+            background-color: black;
+            color: white;
+            padding: 10px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            margin-top: 5px;
+            margin-left: 10px;
+        }
+
+        li {
+            display: inline;
+            margin-right: 10px;
+        }
+
+        a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: yellow;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+
+        }
+
+        .user-avatar {
+            border-radius: 50%;
+            margin-right: 20px;
+            width: 40px;
+            height: 40px;
+        }
+
+        .user-name {
+            font-weight: bold;
+            margin-right: 10px;
+            color: chartreuse;
+
+        }
+    </style>
+    <script>
+        function confirmLogout() { // đăng xuất
+            const isConfirmed = confirm('You are logging out of your account');
+
+            if (isConfirmed) {
+
+                sessionStorage.removeItem('userEmail');
+
+                window.location.replace('/signin');
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <nav>
+        <ul>
+            <li><a href="\homecomic">Home</a></li>
+            <li><a href="\listcomic">List Comic</a></li>
+            <li><a href="\listuser">List User</a></li>
+            <li><a href="\insertcomic">Insert Comic</a></li>
+            <!-- <li><a href="#" onclick="confirmLogout()">Log Out</a></li> -->
+
+        </ul>
+        <div class="user-info">
+            <span class="user-name" id="EmailSignIn"></span>
+            <img src="https://mdbootstrap.com/img/Photos/Others/images/76.jpg" alt="User Avatar" class="user-avatar ">
+
+        </div>
+    </nav>
+
+
+    <script>
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const userEmail = urlParams.get('email');
+
+            if (userEmail) {
+
+                sessionStorage.setItem('userEmail', userEmail);
+
+                document.getElementById("EmailSignIn").innerText = userEmail;
+            } else {
+
+                const storedUserEmail = sessionStorage.getItem('userEmail');
+                if (storedUserEmail) {
+                    document.getElementById("EmailSignIn").innerText = storedUserEmail;
+                }
+            }
+        });
+
+    </script>
+</body>
+
+</html>

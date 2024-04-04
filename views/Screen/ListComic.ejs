@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/e/e3/The_Temple_of_the_Liberal_Arts%2C_with_the_City_of_Bern_and_Minerva_LACMA_M.2000.179.28.jpg');
+            background-size: cover;
+            background-repeat: repeat;
+            display: flex;
+            margin: 0;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-bottom: 40px;
+
+        }
+
+        .search-box {
+            border-radius: 5px;
+            width: 200px;
+            height: 30px;
+            padding-left: 10px;
+            margin-right: 10px;
+        }
+
+        .search-button {
+            background-color: white;
+            font-weight: bold;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            margin-right: 10px;
+            cursor: pointer;
+
+        }
+
+        .button-clicked {
+            background-color: green !important;
+
+            color: white !important;
+        }
+
+        .table th,
+        .table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
+
+</head>
+
+<body>
+    <%- include('../Screen/Navbar.ejs') -%>
+        <div class="container container mt-5 pt-5">
+            <div class="search-container">
+                <input type="text" class="search-box" id="searchInput" placeholder="Search name comic...">
+                <button class="search-button" type="button" onclick="searchByName()">Search</button>
+            </div>
+            <h2 class="pagination justify-content-center mb-5 " style="color: white;">LIST COMIC</h2>
+            <table class="table table-striped" style="text-align: center;">
+                <thead class="table-success">
+                    <tr>
+                        <th >ID Comic</th>
+                        <th>Name Comic</th>
+                        <th>Price</th>
+                        <th>Author</th>
+                        <th>Publishing Year</th>
+                        <th>Describe</th>
+                        <th>Genres</th>
+                        <th >Cover Image</th>
+                        <th>PDF Comic</th>
+                        <th style="width: 400px">Comment</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody id="comicTableBody">
+
+                    <% comics.forEach((comic, index)=> { %>
+                        <tr>
+                            <td style=" word-break: break-word;width: 160px">
+                                <%= comic._id %>
+                            </td>
+                            <td style="font-weight: bold;">
+                                <%= comic.namecomic %>
+                            </td>
+                            <td>
+                                <%= comic.price %>$
+                            </td>
+                            <td>
+                                <%= comic.author %>
+                            </td>
+                            <td>
+                                <%= comic.publishing_year %>
+                            </td>
+                            <td style=" word-break: break-word; width: 300px;">
+                                <%= comic.describe %>
+                            </td>
+                            <td>
+                                <%= comic.genres %>
+                            </td>
+                            <td>
+                                <img src="/images/<%=  comic.cover_image %>"
+                                    style="max-width: 100px; max-height: 100px; border-radius: 10px;">
+
+
+                            </td>
+                            <td>
+                                <a href="/PDF/<%= comic.comic_content %>" target="_blank" style="color: black;">Xem
+                                    File </a>
+                            </td>
+                          
+
+                            <td style=" word-break: break-word;">
+                                    <%= JSON.stringify(comic.comment) %>                                                            
+                            </td>
+                            <td><i class="fas fa-edit" onclick="editComic('<%= comic._id %>')"></i></td>
+                            <td><i class="fas fa-trash-alt" onclick="confirmDelete('<%= comic._id %>')"></i></td>
+                        </tr>
+
+                        <% }); %>
+
+
+                </tbody>
+
+            </table>
+        </div>
+        <script>
+
+            function editComic(id) {
+
+                window.location.href = "/editcomic/" + id;
+                console.log(id)
+            }
+
+            function confirmDelete(id) {
+
+                if (confirm('Bạn có chắc chắn muốn xóa truyện này không?')) {
+
+                    fetch('/deletecomic/' + id, {
+                        method: 'DELETE'
+                    })
+                        .then(response => response.json())
+                        .then(result => {
+
+                            console.log(result);
+
+                            location.reload();
+                        })
+                        .catch(error => console.error('Error deleting product:', error));
+                }
+            }
+            function searchByName() {
+                var searchButton = document.querySelector('.search-button');
+                searchButton.classList.add('button-clicked');
+                setTimeout(function () {
+                    searchButton.classList.remove('button-clicked');
+                }, 100);
+
+                var searchInput = document.getElementById('searchInput');
+                var searchTerm = searchInput.value.trim();
+
+                fetch('/searchComicByName', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ namecomic: searchTerm }),
+                })
+                    .then(response => response.json())
+                    .then(comics => {
+
+                        var tbody = document.getElementById('comicTableBody');
+
+
+                        tbody.innerHTML = "";
+
+
+                        comics.forEach(comic => {
+                            var row = `<tr>
+                                <td style=" word-break: break-word;width: 160px">${comic._id}</td>
+                                <td>${comic.namecomic}</td>
+                                <td>${comic.price}$</td>
+                                <td>${comic.author}</td>
+                                <td>${comic.publishing_year}</td>
+                                <td style=" word-break: break-word; width: 300px;">${comic.describe}</td>
+                                <td>${comic.genres}</td>
+                                <td><img src="/images/${comic.cover_image}" alt="Hình ảnh sản phẩm" style="max-width: 100px; max-height: 100px; border-radius: 10px;">
+                                <td><a href="/PDF/${comic.comic_content}" target="_blank" style="color: black;">XemPDF</a></td>
+                                <td style=" word-break: break-word;">${JSON.stringify(comic.comment)}</td>
+                                <td><i class="fas fa-edit" onclick="editComic('${comic._id}')"></i></td>
+                                <td><i class="fas fa-trash-alt" onclick="confirmDelete('${comic._id}')"></i></td>
+                            </tr>`;
+
+
+                            tbody.innerHTML += row;
+                        });
+                    })
+                    .catch(error => console.error('Error searching for products:', error));
+            }
+            function confirmDeleteComment(){
+
+            }
+
+        </script>
+</body>
+
+</html>

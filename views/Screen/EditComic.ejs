@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Latest compiled and minified CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background-image: url('https://mdbootstrap.com/img/Photos/Others/images/76.jpg');
+            background-size: 1800px 1300px;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('../Screen/Navbar.ejs') -%>
+        <div class="container">
+            <h1 class="pagination justify-content-center " style="margin-top: 400px;color:white;">EDIT COMIC</h1>
+            <form id="SubmitComic" class="was-validated" enctype="multipart/form-data">
+                <div class="mb-3 mt-3">
+                    <label for="uname" class="form-label" style="color: white;">Name Comic:</label>
+                    <input type="text" class="form-control" id="name" placeholder="Name ..." name="name"
+                        value="<%= comic.namecomic %>" required>
+                    <div class="valid-feedback">Valid.</div>
+                    <div class="invalid-feedback">Please fill out this field.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="pwd" class="form-label" style="color: white;">Price:</label>
+                    <input type="number" class="form-control" id="price" placeholder="Price..." name="price"
+                        value="<%= comic.price %>" required>
+                    <div class="valid-feedback">Valid.</div>
+                    <div class="invalid-feedback">Please fill out this field.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="pwd" class="form-label" style="color: white;">Author:</label>
+                    <input type="text" class="form-control" id="author" placeholder="Author..." name="author"
+                        value="<%= comic.author %>" required>
+                    <div class="valid-feedback">Valid.</div>
+                    <div class="invalid-feedback">Please fill out this field.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="pwd" class="form-label" style="color: white;"> Publishing Year:</label>
+                    <input type="number" class="form-control" id="publishing" placeholder="Publishing year..."
+                        value="<%= comic.publishing_year %>" name="publishing" required>
+                    <div class="valid-feedback">Valid.</div>
+                    <div class="invalid-feedback">Please fill out this field.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="pwd" class="form-label" style="color: white;">Describe:</label>
+                    <input type="text" class="form-control" id="describe" placeholder="Describe..." name="describe"
+                        value="<%= comic.describe %>" required>
+                    <div class="valid-feedback">Valid.</div>
+                    <div class="invalid-feedback">Please fill out this field.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="genre" class="form-label" style="color: white;">Genre:</label>
+                    <select class="form-select" id="genre" name="genre" required>
+                        <option value="" disabled>Select genre...</option>
+                        <option value="Hành Động" <%= comic.genres === "Hành Động" ? 'selected' : '' %>>Hành Động</option>
+                        <option value="Trinh Thám" <%= comic.genres === "Trinh Thám" ? 'selected' : '' %>>Trinh Thám</option>
+                        <option value="Tình Cảm" <%= comic.genres === "Tình Cảm" ? 'selected' : '' %>>Tình Cảm</option>
+                        <option value="Kinh Dị" <%= comic.genres === "Kinh Dị" ? 'selected' : '' %>>Kinh Dị</option>
+                        <option value="Anime" <%= comic.genres === "Anime" ? 'selected' : '' %>>Anime</option>
+                    </select>
+                    <div class="valid-feedback">Valid.</div>
+                    <div class="invalid-feedback">Please select a genre.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="pwd" class="form-label" style="color: white;">Cover Image :</label>
+                    <input type="file" class="form-control" id="cover_image" name="cover_image" accept="image/*"
+                        required>
+                    <div class="valid-feedback">Valid.</div>
+                    <div class="invalid-feedback">Please fill out this field.</div>
+                    <% if (comic.cover_image) { %>
+                        <strong style="font-size: larger; color: white;">Selected Image: <%= comic.cover_image %>
+                                </strong>
+                        <% } %>
+                </div>
+                <div class="mb-3">
+                    <label for="pdf_file" class="form-label" style="color: white;">PDF Comic:</label>
+                    <input type="file" class="form-control" id="pdf_comic" name="pdf_comic" accept=".pdf" multiple
+                        required>
+                    <div class="valid-feedback">Valid.</div>
+                    <div class="invalid-feedback">Please fill out this field.</div>
+                    <% if (comic.comic_content) { %>
+                        <strong style="font-size: larger; color: white;">Selected PDF: <%= comic.comic_content %>
+                                </strong>
+                        <% } %>
+                </div>
+                <button type="submit" class="btn btn-primary d-block mx-auto" style="width: 200px;">UPDATE</button>
+
+            </form>
+        </div>
+        <script>
+            const Submitinsert = document.getElementById("SubmitComic")
+            const id = window.location.pathname.split('/').pop();
+
+            Submitinsert.addEventListener("submit", async (event) => {
+                event.preventDefault();
+
+                const formData = new FormData();
+                formData.append('name', document.getElementById("name").value);
+                formData.append('price', document.getElementById("price").value);
+                formData.append('author', document.getElementById("author").value);
+                formData.append('publishing', document.getElementById("publishing").value);
+                formData.append('describe', document.getElementById("describe").value);
+                formData.append('genre', document.getElementById("genre").value);
+
+
+                const coverImageInput = document.getElementById("cover_image");
+                if (coverImageInput.files.length > 0) {
+                    formData.append('cover_image', coverImageInput.files[0]);
+                }
+
+                const pdfComicInput = document.getElementById("pdf_comic");
+                for (const file of pdfComicInput.files) {
+                    formData.append('pdf_comic', file);
+                }
+                fetch('/editcomic/comic/' + id, {
+                    method: 'PUT',
+                    body: formData,
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        if (data.message === "Update truyện thành công") {
+                            document.getElementById("name").value = "";
+                            document.getElementById("price").value = "";
+                            document.getElementById("author").value = "";
+                            document.getElementById("publishing").value = "";
+                            document.getElementById("describe").value = "";
+                            document.getElementById("cover_image").value = "";
+                            document.getElementById("pdf_comic").value = "";
+                            alert("Update truyện thành công!");
+                            window.location.href = "/listcomic"
+                        }
+
+                        else {
+                            alert("Update truyện thất bại!");
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+
+                    });
+            })
+
+
+
+        </script>
+</body>
+
+</html>
